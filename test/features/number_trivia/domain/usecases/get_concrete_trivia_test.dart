@@ -40,11 +40,11 @@ void main() {
           // in the test, it doesn't matter what's returned. Can either return a Failure or a NumberTrivia
           .thenAnswer((_) async => Right(tNumberTrivia));
       // act - execute what you want
-      final result = await usecase.execute(number: tNumber);
+      final result = await usecase(Params(number: tNumber));
       // assert - what the output should be
       expect(result, Right(tNumberTrivia));
       // makes sure that .getConcreteNumberTrivia was actually called with the correct input
-      verify(mockNumberTriviaRepository.getConcreteNumberTrivia(1));
+      verify(mockNumberTriviaRepository.getConcreteNumberTrivia(tNumber));
       // makes sure that nothing else is working on the repository  after the .execute command is called
       verifyNoMoreInteractions(mockNumberTriviaRepository);
     },
