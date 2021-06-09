@@ -10,7 +10,7 @@ import 'get_concrete_trivia_test.mocks.dart';
 
 // since data from NumberTriviaRepository is needed here, implement from it
 // don't do it this way anymore with null safety mockito, use the @GenerateMocks([Real Class Name])
-// and then use flutter pub run build_runner build in the terminal to generate files for null safety mockito
+// and then use flutter pub run build_runner build --delete-conflicting-outputs in the terminal to generate files for null safety mockito
 // class MockNumberTriviaRepository extends Mock
 //     implements NumberTriviaRepository {}
 
@@ -30,14 +30,22 @@ void main() {
   test(
     'should get trivia for the number from the repository',
     () async {
-      // arrange
+      // arrange - set it up how you want
+      // when mockNumberTriviaRepository.getConcreteNumberTrivia is called on it with any argument
       when(mockNumberTriviaRepository.getConcreteNumberTrivia(any))
+          // use .thenAnswer here because .getConcreteNumberTrivia is async
+          // use .thenReturn if it wasn't async
+          // use a => since it's async
+          // since return type of .getConcreteNumberTrivia is Either a Failure or a NumberTrivia
+          // in the test, it doesn't matter what's returned. Can either return a Failure or a NumberTrivia
           .thenAnswer((_) async => Right(tNumberTrivia));
-      // act
+      // act - execute what you want
       final result = await usecase.execute(number: tNumber);
-      // assert
+      // assert - what the output should be
       expect(result, Right(tNumberTrivia));
-      verify(mockNumberTriviaRepository.getConcreteNumberTrivia(tNumber));
+      // makes sure that .getConcreteNumberTrivia was actually called with the correct input
+      verify(mockNumberTriviaRepository.getConcreteNumberTrivia(1));
+      // makes sure that nothing else is working on the repository  after the .execute command is called
       verifyNoMoreInteractions(mockNumberTriviaRepository);
     },
   );
